@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe 遊戲 - GitHub 展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: lightcyan;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game {
+            height: 60vmin;
+            width: 60vmin;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5vmin;
+            justify-content: center;
+        }
+        .box {
+            height: 18vmin;
+            width: 18vmin;
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
+            font-size: 8vmin;
+            color: red;
+            background-color: yellow;
+            cursor: pointer;
+        }
+        .box:hover {
+            background-color: chocolate;
+        }
+        #reset {
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            background: #191913;
+            color: white;
+            border-radius: 1rem;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        #new-btn {
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            background: #191913;
+            color: white;
+            border-radius: 1rem;
+            border: none;
+            cursor: pointer;
+        }
+        #msg {
+            font-size: 8vmin;
+            margin-bottom: 1rem;
+        }
+        .msg-container {
+            height: 30vmin;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hide {
+            display: none;
+        }
+        h1 {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="msg-container hide">
+        <p id="msg">Winner</p>
+        <button id="new-btn">新遊戲</button>
+    </div>
+    <main>
+        <h1>⭕ Tic Tac Toe ❌</h1>
+        <div class="container">
+            <div class="game">
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+                <button class="box"></button>
+            </div>
+        </div>
+        <button id="reset">重置遊戲</button>
+    </main>
+    <script>
+        let boxes = [...document.querySelectorAll('.box')];
+        let resetBtn = document.querySelector('#reset');
+        let turnO = true; // true: O 先手
+        let newGameBtn = document.querySelector('#new-btn');
+        let msgContainer = document.querySelector('.msg-container');
+        let msg = document.querySelector('#msg');
+
+        const winPatterns = [
+            [0, 1, 2], [0, 3, 6], [0, 4, 8],
+            [1, 4, 7], [2, 5, 8], [2, 4, 6],
+            [3, 4, 5], [6, 7, 8]
+        ];
+
+        boxes.forEach((box, index) => {
+            box.addEventListener('click', () => {
+                if (turnO) {
+                    box.innerText = 'O';
+                    box.style.color = 'green';
+                    turnO = false;
+                } else {
+                    box.innerText = 'X';
+                    box.style.color = 'black';
+                    turnO = true;
+                }
+                box.disabled = true;
+                checkWinner();
+            });
+        });
+
+        const enableBoxes = () => {
+            boxes.forEach(box => {
+                box.disabled = false;
+                box.innerText = '';
+                box.style.color = 'red';
+            });
+        };
+
+        const disableBoxes = () => {
+            boxes.forEach(box => box.disabled = true);
+        };
+
+        const showWinner = (winner) => {
+            msg.innerText = `恭喜！${winner} 獲勝`;
+            msgContainer.classList.remove('hide');
+            disableBoxes();
+        };
+
+        const checkWinner = () => {
+            let hasWin = false;
+            for (let pattern of winPatterns) {
+                let [pos1, pos2, pos3] = pattern;
+                let pos1Val = boxes[pos1].innerText;
+                let pos2Val = boxes[pos2].innerText;
+                let pos3Val = boxes[pos3].innerText;
+
+                if (pos1Val !== '' && pos2Val !== '' && pos3Val !== '' &&
+                    pos1Val === pos2Val && pos2Val === pos3Val) {
+                    showWinner(pos1Val);
+                    hasWin = true;
+                    break;
+                }
+            }
+
+            if (!hasWin) {
+                let allFilled = boxes.every(box => box.innerText !== '');
+                if (allFilled) {
+                    msg.innerText = '平手！';
+                    msgContainer.classList.remove('hide');
+                }
+            }
+        };
+
+        const resetGame = () => {
+            turnO = true;
+            enableBoxes();
+            msgContainer.classList.add('hide');
+        };
+
+        resetBtn.addEventListener('click', resetGame);
+        newGameBtn.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
